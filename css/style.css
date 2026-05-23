@@ -35,7 +35,9 @@ body {
     font-family: var(--font); color: var(--text); line-height: 1.6;
     background: var(--bg); -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
+    opacity: 0; transition: opacity .25s ease;
 }
+body.ready { opacity: 1; }
 a { text-decoration: none; color: inherit; transition: color var(--transition); }
 ul { list-style: none; }
 img { max-width: 100%; height: auto; display: block; }

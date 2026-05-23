@@ -413,6 +413,7 @@ var I18N = (function () {
             el.addEventListener('click', function (e) { e.preventDefault(); apply(this.getAttribute('data-lang')); });
         });
         apply(saved);
+        document.body.classList.add('ready');
     }
 
     return { init: init, apply: apply, lang: function () { return lang; }, t: function (k) { return (T[lang] && T[lang][k]) || (T.en && T.en[k]) || k; } };

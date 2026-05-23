@@ -83,6 +83,57 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    /* Scroll spy — highlight active nav link based on visible section */
+    var navLinks = document.querySelectorAll('.nav-menu a[href^="#"]');
+    var sections = [];
+    var spyPaused = false;
+    navLinks.forEach(function (link) {
+        var id = link.getAttribute('href').substring(1);
+        var sec = document.getElementById(id);
+        if (sec) sections.push({ el: sec, link: link });
+    });
+    if (sections.length) {
+        function updateActiveNav() {
+            if (spyPaused) return;
+            var scrollY = window.scrollY + (header ? header.offsetHeight : 0) + 60;
+            var current = null;
+            for (var i = 0; i < sections.length; i++) {
+                if (sections[i].el.offsetTop <= scrollY) {
+                    current = sections[i];
+                }
+            }
+            navLinks.forEach(function (l) { l.classList.remove('active'); });
+            if (current) current.link.classList.add('active');
+        }
+        navLinks.forEach(function (link) {
+            link.addEventListener('click', function () {
+                spyPaused = true;
+                navLinks.forEach(function (l) { l.classList.remove('active'); });
+                this.classList.add('active');
+                setTimeout(function () { spyPaused = false; }, 600);
+            });
+        });
+        window.addEventListener('scroll', updateActiveNav);
+        updateActiveNav();
+    }
+
+    /* Page transition — fade out before navigating to another page */
+    document.querySelectorAll('a').forEach(function (a) {
+        a.addEventListener('click', function (e) {
+            var href = this.getAttribute('href');
+            if (!href) return;
+            if (href.startsWith('#')) return;
+            if (href.startsWith('javascript:')) return;
+            if (this.target === '_blank') return;
+            var isExternal = href.startsWith('http') && !href.includes(location.host);
+            if (isExternal) return;
+            e.preventDefault();
+            document.body.classList.remove('ready');
+            var target = href;
+            setTimeout(function () { window.location.href = target; }, 200);
+        });
+    });
+
     /* Smooth scroll for anchor links */
     document.querySelectorAll('a[href^="#"]').forEach(function (a) {
         a.addEventListener('click', function (e) {
