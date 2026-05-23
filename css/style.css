@@ -634,5 +634,6 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .in-iframe .mobile-menu { display: none !important; }
 .in-iframe .page-hero { padding-top: 80px; }
 
-/* iframe container in parent page */
-#page-frame { width: 100%; border: none; display: none; }
+/* iframe containers in parent page */
+#frame-container { width: 100%; }
+.page-frame { width: 100%; border: none; display: none; }

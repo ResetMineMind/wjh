@@ -45,7 +45,6 @@ document.addEventListener('DOMContentLoaded', function () {
     var footer = document.querySelector('.site-footer');
     var pageContent = document.getElementById('page-content');
     var currentPage = '';
-    var frame = null;
 
     /* Header scroll effect */
     if (header) {
@@ -108,39 +107,25 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     /* ============================================
-       SPA Router via iframe
+       SPA Router via iframe (one iframe per page, cached)
        ============================================ */
 
-    function getOrCreateFrame() {
-        if (!frame) {
-            frame = document.createElement('iframe');
-            frame.id = 'page-frame';
-            if (footer) {
-                footer.parentNode.insertBefore(frame, footer);
-            } else {
-                pageContent.after(frame);
-            }
-        }
-        return frame;
+    var frames = {};
+    var frameContainer = document.createElement('div');
+    frameContainer.id = 'frame-container';
+    if (footer) {
+        footer.parentNode.insertBefore(frameContainer, footer);
+    } else {
+        pageContent.after(frameContainer);
     }
 
-    function showHome() {
-        pageContent.style.display = '';
-        if (frame) frame.style.display = 'none';
-        if (footer) footer.style.cssText = '';
-        currentPage = '';
-        updateNavActive('');
-    }
-
-    function showSubPage(page) {
-        var f = getOrCreateFrame();
+    function getOrCreateFrame(page) {
+        if (frames[page]) return frames[page];
+        var f = document.createElement('iframe');
+        f.className = 'page-frame';
+        f.style.display = 'none';
         f.src = page;
-        f.style.display = 'block';
-        pageContent.style.display = 'none';
-        if (footer) footer.style.cssText = 'display:none !important';
-        currentPage = page;
-        updateNavActive(page);
-        window.scrollTo(0, 0);
+        frameContainer.appendChild(f);
 
         f.onload = function () {
             try {
@@ -150,6 +135,28 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             } catch (e) {}
         };
+
+        frames[page] = f;
+        return f;
+    }
+
+    function showHome() {
+        pageContent.style.display = '';
+        Object.keys(frames).forEach(function (k) { frames[k].style.display = 'none'; });
+        if (footer) footer.style.cssText = '';
+        currentPage = '';
+        updateNavActive('');
+    }
+
+    function showSubPage(page) {
+        Object.keys(frames).forEach(function (k) { frames[k].style.display = 'none'; });
+        var f = getOrCreateFrame(page);
+        f.style.display = 'block';
+        pageContent.style.display = 'none';
+        if (footer) footer.style.cssText = 'display:none !important';
+        currentPage = page;
+        updateNavActive(page);
+        window.scrollTo(0, 0);
     }
 
     function updateNavActive(page) {
@@ -163,10 +170,16 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    /* Listen for height messages from iframe */
+    /* Listen for height messages from iframes */
     window.addEventListener('message', function (e) {
-        if (e.data && e.data.type === 'iframe-height' && frame) {
-            frame.style.height = e.data.height + 'px';
+        if (e.data && e.data.type === 'iframe-height') {
+            Object.keys(frames).forEach(function (k) {
+                try {
+                    if (frames[k].contentWindow === e.source) {
+                        frames[k].style.height = e.data.height + 'px';
+                    }
+                } catch (ex) {}
+            });
         }
     });
 
@@ -233,4 +246,11 @@ document.addEventListener('DOMContentLoaded', function () {
             if (current) current.link.classList.add('active');
         });
     }
+
+    /* Preload all sub-page iframes in background so switching is instant */
+    setTimeout(function () {
+        ['about.html', 'blog.html', 'services.html'].forEach(function (p) {
+            getOrCreateFrame(p);
+        });
+    }, 500);
 });
