@@ -629,10 +629,10 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 /* ============================================
    IFRAME MODE — hide header when inside iframe
    ============================================ */
-body.in-iframe .site-header,
-body.in-iframe .scroll-top,
-body.in-iframe .mobile-menu { display: none !important; }
-body.in-iframe .page-hero { padding-top: 80px; }
+.in-iframe .site-header,
+.in-iframe .scroll-top,
+.in-iframe .mobile-menu { display: none !important; }
+.in-iframe .page-hero { padding-top: 80px; }
 
 /* iframe container in parent page */
 #page-frame { width: 100%; border: none; display: none; }

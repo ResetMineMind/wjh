@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
     /* Detect iframe mode — if inside iframe, hide shell and report height to parent */
     var isInIframe = window !== window.top;
     if (isInIframe) {
-        document.body.classList.add('in-iframe');
+        document.documentElement.classList.add('in-iframe');
         if (typeof I18N !== 'undefined') I18N.init();
 
         document.querySelectorAll('.fade-up').forEach(function (el) {
