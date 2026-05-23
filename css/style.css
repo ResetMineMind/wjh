@@ -35,9 +35,7 @@ body {
     font-family: var(--font); color: var(--text); line-height: 1.6;
     background: var(--bg); -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
-    opacity: 0; transition: opacity .25s ease;
 }
-body.ready { opacity: 1; }
 a { text-decoration: none; color: inherit; transition: color var(--transition); }
 ul { list-style: none; }
 img { max-width: 100%; height: auto; display: block; }
@@ -627,3 +625,14 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     .footer-grid { grid-template-columns: 1fr; gap: 32px; }
     .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
 }
+
+/* ============================================
+   IFRAME MODE — hide header when inside iframe
+   ============================================ */
+body.in-iframe .site-header,
+body.in-iframe .scroll-top,
+body.in-iframe .mobile-menu { display: none !important; }
+body.in-iframe .page-hero { padding-top: 80px; }
+
+/* iframe container in parent page */
+#page-frame { width: 100%; border: none; display: none; }
