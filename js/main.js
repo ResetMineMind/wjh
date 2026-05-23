@@ -111,6 +111,7 @@ document.addEventListener('DOMContentLoaded', function () {
        ============================================ */
 
     var frames = {};
+    var loadedFrames = {};
     var frameContainer = document.createElement('div');
     frameContainer.id = 'frame-container';
     if (footer) {
@@ -122,18 +123,25 @@ document.addEventListener('DOMContentLoaded', function () {
     function getOrCreateFrame(page) {
         if (frames[page]) return frames[page];
         var f = document.createElement('iframe');
-        f.className = 'page-frame';
-        f.style.display = 'none';
+        f.className = 'page-frame hidden';
         f.src = page;
         frameContainer.appendChild(f);
 
         f.onload = function () {
+            loadedFrames[page] = true;
             try {
                 if (typeof I18N !== 'undefined') {
                     var innerI18N = f.contentWindow.I18N;
                     if (innerI18N) innerI18N.apply(I18N.lang());
                 }
             } catch (e) {}
+            if (currentPage === page && !f.classList.contains('visible')) {
+                f.className = 'page-frame visible';
+                frameContainer.classList.add('active');
+                pageContent.style.display = 'none';
+                if (footer) footer.style.cssText = 'display:none !important';
+                window.scrollTo(0, 0);
+            }
         };
 
         frames[page] = f;
@@ -142,21 +150,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function showHome() {
         pageContent.style.display = '';
-        Object.keys(frames).forEach(function (k) { frames[k].style.display = 'none'; });
+        frameContainer.classList.remove('active');
+        Object.keys(frames).forEach(function (k) { frames[k].className = 'page-frame'; });
         if (footer) footer.style.cssText = '';
         currentPage = '';
         updateNavActive('');
     }
 
     function showSubPage(page) {
-        Object.keys(frames).forEach(function (k) { frames[k].style.display = 'none'; });
+        Object.keys(frames).forEach(function (k) { frames[k].className = 'page-frame'; });
         var f = getOrCreateFrame(page);
-        f.style.display = 'block';
-        pageContent.style.display = 'none';
-        if (footer) footer.style.cssText = 'display:none !important';
         currentPage = page;
         updateNavActive(page);
-        window.scrollTo(0, 0);
+
+        if (loadedFrames[page]) {
+            f.className = 'page-frame visible';
+            frameContainer.classList.add('active');
+            pageContent.style.display = 'none';
+            if (footer) footer.style.cssText = 'display:none !important';
+            window.scrollTo(0, 0);
+        }
     }
 
     function updateNavActive(page) {
