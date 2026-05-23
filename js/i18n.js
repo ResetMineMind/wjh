@@ -400,15 +400,17 @@ var I18N = (function () {
 
         var lb = document.getElementById('current-lang-label');
         if (lb) lb.textContent = langLabels[l] || l;
-        document.querySelectorAll('.lang-dropdown a[data-lang]').forEach(function (a) {
-            a.classList.toggle('active', a.getAttribute('data-lang') === l);
+        document.querySelectorAll('.lang-dropdown [data-lang]').forEach(function (el) {
+            el.classList.toggle('active', el.getAttribute('data-lang') === l);
         });
+        var sw = document.querySelector('.lang-switcher');
+        if (sw) sw.classList.remove('open');
     }
 
     function init() {
         var saved = localStorage.getItem('ptsgi_lang') || 'en';
-        document.querySelectorAll('.lang-dropdown a[data-lang]').forEach(function (a) {
-            a.addEventListener('click', function (e) { e.preventDefault(); apply(this.getAttribute('data-lang')); });
+        document.querySelectorAll('.lang-dropdown [data-lang]').forEach(function (el) {
+            el.addEventListener('click', function (e) { e.preventDefault(); apply(this.getAttribute('data-lang')); });
         });
         apply(saved);
     }
