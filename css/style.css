@@ -751,6 +751,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
    IFRAME MODE — hide header when inside iframe
    ============================================ */
 .in-iframe .site-header,
+.in-iframe .site-footer,
 .in-iframe .scroll-top,
 .in-iframe .mobile-menu { display: none !important; }
 .in-iframe .page-hero { padding-top: 80px; }

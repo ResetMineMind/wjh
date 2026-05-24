@@ -24,6 +24,19 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
+        /* Intercept all navigation links and forward to parent SPA */
+        document.addEventListener('click', function (e) {
+            var a = e.target.closest('a');
+            if (!a) return;
+            var href = a.getAttribute('href');
+            if (!href || href === '#') return;
+            if (a.target === '_blank') return;
+            if (href.startsWith('mailto:') || href.startsWith('javascript:')) return;
+            if (href.startsWith('http')) return;
+            e.preventDefault();
+            window.parent.postMessage({ type: 'iframe-navigate', href: href }, '*');
+        });
+
         function sendHeight() {
             var h = document.documentElement.scrollHeight;
             window.parent.postMessage({ type: 'iframe-height', height: h }, '*');
@@ -183,9 +196,11 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    /* Listen for height messages from iframes */
+    /* Listen for messages from iframes */
     window.addEventListener('message', function (e) {
-        if (e.data && e.data.type === 'iframe-height') {
+        if (!e.data) return;
+
+        if (e.data.type === 'iframe-height') {
             Object.keys(frames).forEach(function (k) {
                 try {
                     if (frames[k].contentWindow === e.source) {
@@ -193,6 +208,30 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 } catch (ex) {}
             });
+        }
+
+        if (e.data.type === 'iframe-navigate') {
+            var href = e.data.href;
+            var hashIdx = href.indexOf('#');
+            var page = hashIdx !== -1 ? href.substring(0, hashIdx) : href;
+            var anchor = hashIdx !== -1 ? href.substring(hashIdx) : '';
+
+            var isSubPage = page && page !== 'index.html' && page.endsWith('.html');
+
+            if (isSubPage) {
+                if (page !== currentPage) showSubPage(page);
+            } else {
+                if (currentPage) showHome();
+                if (anchor) {
+                    setTimeout(function () {
+                        var el = document.querySelector(anchor);
+                        if (el) {
+                            var offset = (header ? header.offsetHeight : 0) + 16;
+                            window.scrollTo({ top: el.offsetTop - offset, behavior: 'smooth' });
+                        }
+                    }, 50);
+                }
+            }
         }
     });
 
