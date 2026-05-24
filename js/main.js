@@ -37,6 +37,14 @@ document.addEventListener('DOMContentLoaded', function () {
             window.parent.postMessage({ type: 'iframe-navigate', href: href }, '*');
         });
 
+        /* Listen for language changes from parent */
+        window.addEventListener('message', function (e) {
+            if (e.data && e.data.type === 'lang-change' && e.data.lang) {
+                if (typeof I18N !== 'undefined') I18N.apply(e.data.lang);
+                setTimeout(sendHeight, 50);
+            }
+        });
+
         function sendHeight() {
             var h = document.documentElement.scrollHeight;
             window.parent.postMessage({ type: 'iframe-height', height: h }, '*');
@@ -144,8 +152,7 @@ document.addEventListener('DOMContentLoaded', function () {
             loadedFrames[page] = true;
             try {
                 if (typeof I18N !== 'undefined') {
-                    var innerI18N = f.contentWindow.I18N;
-                    if (innerI18N) innerI18N.apply(I18N.lang());
+                    f.contentWindow.postMessage({ type: 'lang-change', lang: I18N.lang() }, '*');
                 }
             } catch (e) {}
             if (currentPage === page && !f.classList.contains('visible')) {
@@ -298,6 +305,15 @@ document.addEventListener('DOMContentLoaded', function () {
             if (current) current.link.classList.add('active');
         });
     }
+
+    /* Sync language changes to all loaded iframes via postMessage */
+    new MutationObserver(function () {
+        var currentLang = (typeof I18N !== 'undefined') ? I18N.lang() : null;
+        if (!currentLang) return;
+        Object.keys(frames).forEach(function (k) {
+            try { frames[k].contentWindow.postMessage({ type: 'lang-change', lang: currentLang }, '*'); } catch (e) {}
+        });
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
 
     /* Preload all sub-page iframes in background so switching is instant */
     setTimeout(function () {
