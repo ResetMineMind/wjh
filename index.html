@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,500;1,8..60,600;1,8..60,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css?v=3">
+    <link rel="stylesheet" href="css/style.css?v=4">
 </head>
 <body>
 
@@ -186,6 +186,12 @@
                 </div>
                 <h1 data-i18n-html="hero_title">Bridging Languages,<br><span class="accent">Connecting Worlds</span></h1>
                 <p class="tagline" data-i18n="hero_tagline">Professional translation and interpretation services trusted by Fortune 500 companies worldwide. 40+ years of excellence in bridging communication gaps across 100+ languages.</p>
+                <div class="hero-typing">
+                    <span class="typing-label" data-i18n="hero_typing_label">"Hello"</span>
+                    <span class="typing-arrow">→</span>
+                    <span class="typing-output" id="typing-output"></span>
+                    <span class="typing-cursor">|</span>
+                </div>
                 <div class="hero-btns">
                     <a href="#pricing" class="btn btn-primary" data-i18n="hero_cta1">Get Started</a>
                     <a href="services.html" class="btn btn-outline" data-i18n="hero_cta2">Our Services</a>
@@ -207,6 +213,14 @@
                         <span class="hero-stat-label" data-i18n="hero_stat_clients">Global Clients</span>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Language ticker -->
+        <div class="hero-ticker">
+            <div class="ticker-track">
+                <span>Hello</span><span>你好</span><span>こんにちは</span><span>안녕하세요</span><span>Bonjour</span><span>Hola</span><span>Hallo</span><span>Ciao</span><span>Olá</span><span>Привет</span><span>مرحبا</span><span>สวัสดี</span><span>Xin chào</span><span>Hej</span><span>Merhaba</span><span>Γεια σας</span><span>Cześć</span><span>Helo</span><span>Namaste</span><span>Selamat</span>
+                <span>Hello</span><span>你好</span><span>こんにちは</span><span>안녕하세요</span><span>Bonjour</span><span>Hola</span><span>Hallo</span><span>Ciao</span><span>Olá</span><span>Привет</span><span>مرحبا</span><span>สวัสดี</span><span>Xin chào</span><span>Hej</span><span>Merhaba</span><span>Γεια σας</span><span>Cześć</span><span>Helo</span><span>Namaste</span><span>Selamat</span>
             </div>
         </div>
     </section>
@@ -476,13 +490,83 @@
     <button class="scroll-top" aria-label="Scroll to top">↑</button>
 
     <!-- Scripts -->
-    <script src="js/i18n.js?v=3"></script>
-    <script src="js/main.js?v=3"></script>
+    <script src="js/i18n.js?v=4"></script>
+    <script src="js/main.js?v=5"></script>
 
     <!-- 3D Globe renderer -->
     <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
     <script>
+    /* ---- Typing translation animation ---- */
+    (function(){
+        var words = [
+            {text: '你好', lang: 'ZH'},
+            {text: 'こんにちは', lang: 'JA'},
+            {text: '안녕하세요', lang: 'KO'},
+            {text: 'Bonjour', lang: 'FR'},
+            {text: 'Hola', lang: 'ES'},
+            {text: 'Hallo', lang: 'DE'},
+            {text: 'Ciao', lang: 'IT'},
+            {text: 'Olá', lang: 'PT'},
+            {text: 'Привет', lang: 'RU'},
+            {text: 'Selamat', lang: 'MS'},
+            {text: 'Xin chào', lang: 'VI'},
+            {text: 'Merhaba', lang: 'TR'}
+        ];
+        var el = document.getElementById('typing-output');
+        if (!el) return;
+        var idx = 0;
+
+        function typeWord() {
+            var word = words[idx % words.length];
+            var chars = word.text;
+            var i = 0;
+            el.textContent = '';
+            var typeTimer = setInterval(function(){
+                if (i < chars.length) {
+                    el.textContent += chars[i]; i++;
+                } else {
+                    clearInterval(typeTimer);
+                    setTimeout(eraseWord, 1800);
+                }
+            }, 80);
+        }
+        function eraseWord() {
+            var txt = el.textContent;
+            var eraseTimer = setInterval(function(){
+                if (txt.length > 0) {
+                    txt = txt.slice(0, -1);
+                    el.textContent = txt;
+                } else {
+                    clearInterval(eraseTimer);
+                    idx++;
+                    setTimeout(typeWord, 400);
+                }
+            }, 40);
+        }
+        typeWord();
+    })();
+
+    /* ---- Mouse parallax for globe & clouds ---- */
+    (function(){
+        var globe = document.querySelector('.hero-globe-wrapper');
+        var clouds = document.querySelector('.hero-clouds');
+        var hero = document.querySelector('.hero');
+        if (!hero) return;
+        hero.addEventListener('mousemove', function(e){
+            var rect = hero.getBoundingClientRect();
+            var x = (e.clientX - rect.left) / rect.width - 0.5;
+            var y = (e.clientY - rect.top) / rect.height - 0.5;
+            if (globe) globe.style.transform = 'translateY(-50%) translate(' + (x * 18) + 'px,' + (y * 12) + 'px)';
+            if (clouds) clouds.style.transform = 'translate(' + (x * -10) + 'px,' + (y * -8) + 'px)';
+        });
+        hero.addEventListener('mouseleave', function(){
+            if (globe) globe.style.transform = 'translateY(-50%)';
+            if (clouds) clouds.style.transform = '';
+        });
+    })();
+
+    /* ---- 3D Globe with drag-to-rotate ---- */
     (function(){
         var canvas = document.getElementById('globe-canvas');
         if (!canvas) return;
@@ -498,14 +582,36 @@
         var path = d3.geoPath(projection, ctx);
 
         var land = null;
+        var graticule = d3.geoGraticule10();
         var rotation = [250, -20, 0];
+        var autoSpeed = 0.06;
         var frame = 0;
+        var dragging = false, dragStart = null, rotStart = null;
         var cities = [
             {name:'Kuala Lumpur', coords:[101.7, 3.1]},
             {name:'Tokyo', coords:[139.7, 35.7]},
             {name:'London', coords:[-0.1, 51.5]},
             {name:'New York', coords:[-74.0, 40.7]}
         ];
+
+        var wrapper = canvas.closest('.hero-globe-wrapper');
+        if (wrapper) wrapper.style.pointerEvents = 'auto';
+        canvas.style.cursor = 'grab';
+
+        canvas.addEventListener('pointerdown', function(e){
+            dragging = true; canvas.style.cursor = 'grabbing';
+            dragStart = {x: e.clientX, y: e.clientY};
+            rotStart = rotation.slice();
+            canvas.setPointerCapture(e.pointerId);
+        });
+        canvas.addEventListener('pointermove', function(e){
+            if (!dragging) return;
+            var scale = 360 / canvas.clientWidth;
+            rotation[0] = rotStart[0] + (e.clientX - dragStart.x) * scale;
+            rotation[1] = Math.max(-60, Math.min(60, rotStart[1] - (e.clientY - dragStart.y) * scale * 0.5));
+        });
+        canvas.addEventListener('pointerup', function(){ dragging = false; canvas.style.cursor = 'grab'; });
+        canvas.addEventListener('pointercancel', function(){ dragging = false; canvas.style.cursor = 'grab'; });
 
         fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/land-110m.json')
             .then(function(r){return r.json()})
@@ -536,7 +642,6 @@
             ctx.fill();
 
             // Grid lines
-            var graticule = d3.geoGraticule10();
             ctx.beginPath();
             path(graticule);
             ctx.strokeStyle = 'rgba(255,255,255,0.035)';
@@ -554,50 +659,71 @@
                 ctx.stroke();
             }
 
-            // Arcs with glow effect
+            // Arcs with enhanced glow + animated dash + trail particles
+            ctx.save();
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
             var hub = cities[0].coords;
             for(var i=1;i<cities.length;i++){
-                var pts = greatCircleInterp(hub, cities[i].coords, 50);
+                var pts = greatCircleInterp(hub, cities[i].coords, 60);
                 var lineGeo = {type:'Feature',geometry:{type:'LineString',coordinates:pts}};
 
-                // Outer glow
-                ctx.beginPath();
-                path(lineGeo);
-                ctx.strokeStyle = 'rgba(240,181,40,0.15)';
-                ctx.lineWidth = 4;
+                // Wide soft glow (no shadowBlur for performance)
+                ctx.beginPath(); path(lineGeo);
+                ctx.strokeStyle = 'rgba(240,181,40,0.04)';
+                ctx.lineWidth = 12;
                 ctx.stroke();
 
-                // Main arc
-                ctx.beginPath();
-                path(lineGeo);
-                ctx.strokeStyle = 'rgba(240,181,40,0.6)';
+                ctx.beginPath(); path(lineGeo);
+                ctx.strokeStyle = 'rgba(240,181,40,0.08)';
+                ctx.lineWidth = 6;
+                ctx.stroke();
+
+                // Mid glow
+                ctx.beginPath(); path(lineGeo);
+                ctx.strokeStyle = 'rgba(240,181,40,0.2)';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                // Core bright line with animated dash
+                ctx.beginPath(); path(lineGeo);
+                ctx.strokeStyle = 'rgba(255,215,100,0.7)';
                 ctx.lineWidth = 1.5;
+                ctx.setLineDash([6, 8]);
+                ctx.lineDashOffset = -frame * 0.8;
                 ctx.stroke();
+                ctx.setLineDash([]);
 
-                // Traveling light particle
-                var t = ((frame * (0.005 + i*0.002)) % 1);
-                var particlePt = d3.geoInterpolate(hub, cities[i].coords)(t);
-                var pp = projection(particlePt);
-                if(pp){
+                // Traveling light particle (single bright dot + 1 trail)
+                var speed = 0.004 + i * 0.0015;
+                var t = (frame * speed) % 1;
+                for(var ti = 0; ti < 2; ti++){
+                    var pt = t - ti * 0.02;
+                    if(pt < 0) pt += 1;
+                    var particlePt = d3.geoInterpolate(hub, cities[i].coords)(pt);
+                    var pp = projection(particlePt);
+                    if(!pp) continue;
                     var gd = d3.geoDistance(
                         [particlePt[0]*Math.PI/180, particlePt[1]*Math.PI/180],
                         [-rotation[0]*Math.PI/180, -rotation[1]*Math.PI/180]
                     );
-                    if(gd < Math.PI/2){
-                        var pGrad = ctx.createRadialGradient(pp[0],pp[1],0,pp[0],pp[1],12);
-                        pGrad.addColorStop(0,'rgba(255,220,100,0.9)');
-                        pGrad.addColorStop(0.4,'rgba(240,181,40,0.4)');
-                        pGrad.addColorStop(1,'rgba(240,181,40,0)');
-                        ctx.beginPath();
-                        ctx.arc(pp[0],pp[1],12,0,Math.PI*2);
-                        ctx.fillStyle = pGrad;
-                        ctx.fill();
-                    }
+                    if(gd > Math.PI/2) continue;
+                    var r = ti === 0 ? 10 : 5;
+                    var a = ti === 0 ? 0.85 : 0.35;
+                    ctx.beginPath();
+                    ctx.arc(pp[0],pp[1],r,0,Math.PI*2);
+                    var pGrad = ctx.createRadialGradient(pp[0],pp[1],0,pp[0],pp[1],r);
+                    pGrad.addColorStop(0,'rgba(255,235,150,' + a + ')');
+                    pGrad.addColorStop(0.4,'rgba(240,181,40,' + (a*0.4) + ')');
+                    pGrad.addColorStop(1,'rgba(240,181,40,0)');
+                    ctx.fillStyle = pGrad;
+                    ctx.fill();
                 }
             }
+            ctx.restore();
 
-            // Cities
-            cities.forEach(function(city){
+            // Cities with enhanced pulse rings
+            cities.forEach(function(city, ci){
                 var p = projection(city.coords);
                 if(!p) return;
                 var gd = d3.geoDistance(
@@ -606,28 +732,38 @@
                 );
                 if(gd > Math.PI/2) return;
 
-                // City glow
-                var cGrad = ctx.createRadialGradient(p[0],p[1],0,p[0],p[1],16);
-                cGrad.addColorStop(0,'rgba(240,181,40,0.5)');
+                var isHub = (ci === 0);
+                var baseR = isHub ? 20 : 14;
+
+                // Outer glow
+                var cGrad = ctx.createRadialGradient(p[0],p[1],0,p[0],p[1],baseR + 8);
+                cGrad.addColorStop(0, isHub ? 'rgba(240,181,40,0.6)' : 'rgba(240,181,40,0.4)');
                 cGrad.addColorStop(1,'rgba(240,181,40,0)');
                 ctx.beginPath();
-                ctx.arc(p[0],p[1],16,0,Math.PI*2);
+                ctx.arc(p[0],p[1],baseR + 8,0,Math.PI*2);
                 ctx.fillStyle = cGrad;
                 ctx.fill();
 
                 // City dot
                 ctx.beginPath();
-                ctx.arc(p[0],p[1],4,0,Math.PI*2);
+                ctx.arc(p[0],p[1], isHub ? 5 : 3.5, 0, Math.PI*2);
                 ctx.fillStyle = '#f0b528';
                 ctx.fill();
 
-                // Pulse ring
-                var pulseR = 8 + Math.sin(frame*0.04 + gd*5)*4;
-                ctx.beginPath();
-                ctx.arc(p[0],p[1],pulseR,0,Math.PI*2);
-                ctx.strokeStyle = 'rgba(240,181,40,'+(0.5 - Math.sin(frame*0.04+gd*5)*0.2)+')';
-                ctx.lineWidth = 1.2;
-                ctx.stroke();
+                // Expanding pulse rings (2 rings, staggered)
+                for(var ri = 0; ri < 2; ri++){
+                    var phase = (frame * 0.03 + gd * 3 + ri * Math.PI) % (Math.PI * 2);
+                    var pulseT = (Math.sin(phase) + 1) * 0.5;
+                    var pulseR = (isHub ? 10 : 7) + pulseT * (isHub ? 16 : 10);
+                    var pulseA = 0.45 - pulseT * 0.4;
+                    if(pulseA > 0.02){
+                        ctx.beginPath();
+                        ctx.arc(p[0],p[1],pulseR,0,Math.PI*2);
+                        ctx.strokeStyle = 'rgba(240,181,40,' + pulseA + ')';
+                        ctx.lineWidth = isHub ? 1.5 : 1;
+                        ctx.stroke();
+                    }
+                }
             });
 
             // Sphere highlight (3D lighting)
@@ -648,12 +784,15 @@
             ctx.stroke();
         }
 
+        var animId = 0;
         function animate(){
             frame++;
-            rotation[0] += 0.06;
+            if (!dragging) rotation[0] += autoSpeed;
             draw();
-            requestAnimationFrame(animate);
+            animId = requestAnimationFrame(animate);
         }
+        window._globePause = function(){ cancelAnimationFrame(animId); animId = 0; };
+        window._globeResume = function(){ if(!animId) animate(); };
     })();
     </script>
 </body>

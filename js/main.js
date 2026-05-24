@@ -45,13 +45,21 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
+        var lastSentHeight = 0;
+        var heightRafId = 0;
         function sendHeight() {
-            var h = document.documentElement.scrollHeight;
-            window.parent.postMessage({ type: 'iframe-height', height: h }, '*');
+            if (heightRafId) return;
+            heightRafId = requestAnimationFrame(function () {
+                heightRafId = 0;
+                var h = document.documentElement.scrollHeight;
+                if (h !== lastSentHeight) {
+                    lastSentHeight = h;
+                    window.parent.postMessage({ type: 'iframe-height', height: h }, '*');
+                }
+            });
         }
         sendHeight();
-        setTimeout(sendHeight, 100);
-        setTimeout(sendHeight, 300);
+        setTimeout(sendHeight, 200);
         setTimeout(sendHeight, 1000);
         new ResizeObserver(sendHeight).observe(document.body);
 
@@ -66,13 +74,6 @@ document.addEventListener('DOMContentLoaded', function () {
     var footer = document.querySelector('.site-footer');
     var pageContent = document.getElementById('page-content');
     var currentPage = '';
-
-    /* Header scroll effect */
-    if (header) {
-        window.addEventListener('scroll', function () {
-            header.classList.toggle('scrolled', window.scrollY > 20);
-        });
-    }
 
     /* Language switcher toggle */
     var langSwitcher = document.querySelector('.lang-switcher');
@@ -104,13 +105,23 @@ document.addEventListener('DOMContentLoaded', function () {
     /* Scroll to top */
     var scrollBtn = document.querySelector('.scroll-top');
     if (scrollBtn) {
-        window.addEventListener('scroll', function () {
-            scrollBtn.classList.toggle('visible', window.scrollY > 400);
-        });
         scrollBtn.addEventListener('click', function () {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     }
+
+    /* Unified scroll handler (rAF-throttled) */
+    var scrollTicking = false;
+    window.addEventListener('scroll', function () {
+        if (scrollTicking) return;
+        scrollTicking = true;
+        requestAnimationFrame(function () {
+            var y = window.scrollY;
+            if (header) header.classList.toggle('scrolled', y > 20);
+            if (scrollBtn) scrollBtn.classList.toggle('visible', y > 400);
+            scrollTicking = false;
+        });
+    }, { passive: true });
 
     /* Pricing form */
     var form = document.querySelector('.pricing-form form');
@@ -175,6 +186,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (footer) footer.style.cssText = '';
         currentPage = '';
         updateNavActive('');
+        if (typeof window._globeResume === 'function') window._globeResume();
     }
 
     function showSubPage(page) {
@@ -182,6 +194,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var f = getOrCreateFrame(page);
         currentPage = page;
         updateNavActive(page);
+        if (typeof window._globePause === 'function') window._globePause();
 
         if (loadedFrames[page]) {
             f.className = 'page-frame visible';
@@ -208,10 +221,12 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!e.data) return;
 
         if (e.data.type === 'iframe-height') {
+            var src = e.source;
+            var newH = e.data.height + 'px';
             Object.keys(frames).forEach(function (k) {
                 try {
-                    if (frames[k].contentWindow === e.source) {
-                        frames[k].style.height = e.data.height + 'px';
+                    if (frames[k].contentWindow === src && frames[k].style.height !== newH) {
+                        frames[k].style.height = newH;
                     }
                 } catch (ex) {}
             });
@@ -294,16 +309,21 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     if (sections.length) {
+        var spyTicking = false;
         window.addEventListener('scroll', function () {
-            if (currentPage) return;
-            var scrollY = window.scrollY + (header ? header.offsetHeight : 0) + 60;
-            var current = null;
-            for (var i = 0; i < sections.length; i++) {
-                if (sections[i].el.offsetTop <= scrollY) current = sections[i];
-            }
-            spyLinks.forEach(function (l) { l.classList.remove('active'); });
-            if (current) current.link.classList.add('active');
-        });
+            if (currentPage || spyTicking) return;
+            spyTicking = true;
+            requestAnimationFrame(function () {
+                spyTicking = false;
+                var scrollY = window.scrollY + (header ? header.offsetHeight : 0) + 60;
+                var current = null;
+                for (var i = 0; i < sections.length; i++) {
+                    if (sections[i].el.offsetTop <= scrollY) current = sections[i];
+                }
+                spyLinks.forEach(function (l) { l.classList.remove('active'); });
+                if (current) current.link.classList.add('active');
+            });
+        }, { passive: true });
     }
 
     /* Sync language changes to all loaded iframes via postMessage */
