@@ -10,6 +10,7 @@ var I18N = (function () {
             hero_title: 'Bridging Languages,<br><span class="accent">Connecting Worlds</span>',
             hero_tagline: 'Asia\'s leading multilingual services company — backed by 13,600+ professional translators covering 145+ languages worldwide.',
             hero_cta1: 'Get Started', hero_cta2: 'Our Services',
+            hero_stat_lang: 'Languages', hero_stat_years: 'Years Experience', hero_stat_clients: 'Global Clients',
 
             svc_label: 'Our Services', svc_title: 'Professional Language Solutions',
             svc_desc: 'From document translation to simultaneous interpretation, we deliver precision across every language pair.',
@@ -115,6 +116,7 @@ var I18N = (function () {
             hero_title: '跨越语言，<br><span class="accent">连接世界</span>',
             hero_tagline: '亚洲领先的多语言服务公司——拥有超过13,600名专业译者，覆盖全球145+种语言。',
             hero_cta1: '立即开始', hero_cta2: '查看服务',
+            hero_stat_lang: '种语言', hero_stat_years: '年经验', hero_stat_clients: '全球客户',
 
             svc_label: '我们的服务', svc_title: '专业语言解决方案',
             svc_desc: '从文档翻译到同声传译，我们为每一个语言对提供精准服务。',
@@ -205,6 +207,7 @@ var I18N = (function () {
             hero_title: 'Menjambatani Bahasa,<br><span class="accent">Menghubungkan Dunia</span>',
             hero_tagline: 'Syarikat perkhidmatan pelbagai bahasa terkemuka di Asia — disokong oleh 13,600+ penterjemah profesional merangkumi 145+ bahasa.',
             hero_cta1: 'Mulakan', hero_cta2: 'Perkhidmatan Kami',
+            hero_stat_lang: 'Bahasa', hero_stat_years: 'Tahun Pengalaman', hero_stat_clients: 'Pelanggan Global',
 
             svc_label: 'Perkhidmatan Kami', svc_title: 'Penyelesaian Bahasa Profesional',
             svc_desc: 'Dari terjemahan dokumen hingga interpretasi serentak, kami memberikan ketepatan merentasi setiap pasangan bahasa.',
@@ -295,6 +298,7 @@ var I18N = (function () {
             hero_title: '言語の架け橋、<br><span class="accent">世界をつなぐ</span>',
             hero_tagline: 'アジアをリードする多言語サービス企業——13,600名以上のプロ翻訳者が145以上の言語をカバー。',
             hero_cta1: '始めましょう', hero_cta2: 'サービス一覧',
+            hero_stat_lang: '言語', hero_stat_years: '年の実績', hero_stat_clients: 'グローバル顧客',
 
             svc_label: 'サービス', svc_title: 'プロフェッショナル言語ソリューション',
             svc_desc: 'ドキュメント翻訳から同時通訳まで、あらゆる言語ペアで精度の高いサービスを提供します。',
