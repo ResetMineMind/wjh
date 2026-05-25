@@ -225,8 +225,11 @@ document.addEventListener('DOMContentLoaded', function () {
             var newH = e.data.height + 'px';
             Object.keys(frames).forEach(function (k) {
                 try {
-                    if (frames[k].contentWindow === src && frames[k].style.height !== newH) {
-                        frames[k].style.height = newH;
+                    if (frames[k].contentWindow === src) {
+                        var isVisible = frames[k].classList.contains('visible');
+                        if (isVisible && frames[k].style.height !== newH) {
+                            frames[k].style.height = newH;
+                        }
                     }
                 } catch (ex) {}
             });

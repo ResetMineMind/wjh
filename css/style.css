@@ -564,86 +564,151 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .about-text h2 { font-size: 1.8rem; font-weight: 700; margin-bottom: 16px; }
 .about-text p { color: var(--text-light); line-height: 1.8; margin-bottom: 12px; }
 
-/* Workflow Tree */
-.tree { max-width: 820px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; }
-
-/* Vertical pipe between tiers */
-.tree-connector-down { width: 2px; height: 20px; background: var(--primary); flex-shrink: 0; }
-
-/* --- Tier layouts --- */
-.tree-tier { display: flex; justify-content: center; gap: 28px; position: relative; width: 100%; }
-.tier-root { max-width: 400px; }
-
-/* --- Branch tier: two-column fork + merge --- */
-.tier-branch { position: relative; padding: 20px 0; }
-/* Top horizontal bar (fork): spans from center of left col to center of right col */
-.tier-branch::before {
-    content: ''; position: absolute; top: 0;
-    left: calc(25% - 7px); right: calc(25% - 7px);
-    height: 2px; background: var(--primary); z-index: 1;
-}
-/* Bottom horizontal bar (merge) */
-.tier-branch::after {
-    content: ''; position: absolute; bottom: 0;
-    left: calc(25% - 7px); right: calc(25% - 7px);
-    height: 2px; background: var(--primary); z-index: 1;
-}
-/* Each column: vertical line from top fork bar down to dot */
-.tier-branch .tree-node-v::before {
-    content: ''; position: absolute; top: -20px; left: 50%;
-    width: 2px; height: 20px; background: var(--primary); transform: translateX(-50%);
-}
-/* Each column: vertical line from card bottom to merge bar */
-.tier-branch .tree-node-v::after {
-    content: ''; position: absolute; bottom: -20px; left: 50%;
-    width: 2px; height: 20px; background: var(--primary); transform: translateX(-50%);
+/* Section subtitle */
+.section-subtitle {
+    font-size: 1.05rem; color: var(--text-light); margin-top: 8px; text-align: center;
 }
 
-/* --- Node --- */
-.tree-node-v {
-    display: flex; flex-direction: column; align-items: center;
-    position: relative; flex: 1; min-width: 0;
+/* Three-Stage Service Phases */
+.service-phases {
+    display: flex; align-items: stretch; gap: 0; margin-top: 48px;
+    justify-content: center;
 }
-.tree-dot {
-    width: 44px; height: 44px; border-radius: 50%;
-    background: var(--primary); color: #fff; z-index: 3;
+.service-phase {
+    flex: 1; max-width: 380px; background: var(--bg);
+    border: 2px solid var(--border); border-radius: var(--radius);
+    padding: 28px 30px 22px; position: relative;
+    box-shadow: var(--shadow-sm);
+    display: flex; flex-direction: column;
+}
+.service-phase:hover {
+    border-color: var(--primary);
+}
+.phase-badge {
+    display: inline-block; background: var(--primary); color: #fff;
+    font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+    padding: 4px 14px; border-radius: 20px; margin-bottom: 16px; align-self: flex-start;
+}
+.phase-pre .phase-badge { background: #4f46e5; }
+.phase-mid .phase-badge { background: var(--primary); }
+.phase-post .phase-badge { background: #059669; }
+.phase-title {
+    font-size: 1.15rem; font-weight: 700; color: var(--text); margin-bottom: 18px;
+}
+.phase-items {
+    list-style: none; padding: 0; margin: 0 0 auto; display: flex; flex-direction: column; gap: 6px;
+}
+/* Step number badge */
+.step-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 24px; height: 24px; border-radius: 50%;
+    font-size: .65rem; font-weight: 700; color: #fff; flex-shrink: 0;
+    margin-right: 10px; background: var(--primary);
+}
+.phase-pre .step-num { background: #4f46e5; }
+.phase-mid .step-num { background: var(--primary); }
+.phase-post .step-num { background: #059669; }
+
+.phase-items li {
+    font-size: .84rem; color: var(--text-muted); font-weight: 600;
+    line-height: 1.5;
+    padding: 9px 14px; border-radius: 10px; position: relative;
+    display: flex; align-items: center;
+    border: 1.5px solid transparent;
+    background: transparent;
+    will-change: transform;
+    backface-visibility: hidden;
+    transition: transform .4s cubic-bezier(.22,1,.36,1),
+                background .3s ease, border-color .3s ease,
+                box-shadow .35s ease, color .3s ease;
+}
+.phase-items li::before { display: none; }
+
+/* Active step — pop up, no scale to avoid sub-pixel jitter */
+.phase-items li.step-active {
+    transform: translateY(-8px);
+    color: var(--dark);
+    background: #fff;
+    border-color: rgba(26,20,100,.15);
+    box-shadow: 0 10px 28px rgba(26,20,100,.15), 0 2px 6px rgba(0,0,0,.06);
+    z-index: 5;
+}
+.phase-pre li.step-active {
+    border-color: rgba(79,70,229,.3);
+    box-shadow: 0 8px 24px rgba(79,70,229,.14), 0 2px 6px rgba(79,70,229,.06);
+}
+.phase-mid li.step-active {
+    border-color: rgba(26,20,100,.2);
+    box-shadow: 0 8px 24px rgba(26,20,100,.14), 0 2px 6px rgba(26,20,100,.06);
+}
+.phase-post li.step-active {
+    border-color: rgba(5,150,105,.3);
+    box-shadow: 0 8px 24px rgba(5,150,105,.14), 0 2px 6px rgba(5,150,105,.06);
+}
+.phase-tag {
+    margin-top: 20px; padding: 10px 14px; border-radius: var(--radius);
+    background: var(--bg-alt); font-size: .82rem; font-weight: 600; color: var(--text);
+    display: flex; align-items: center; gap: 8px;
+}
+.phase-tag-icon { font-size: 1rem; opacity: .7; }
+
+/* phase-active: card stays completely static */
+
+/* Arrow between phases */
+.phase-arrow {
     display: flex; align-items: center; justify-content: center;
-    font-size: .8rem; font-weight: 700; flex-shrink: 0;
-    box-shadow: 0 0 0 4px var(--bg-alt), 0 0 0 6px rgba(26,20,100,.08);
-    transition: background .25s ease, transform .25s ease, box-shadow .25s ease;
+    padding: 0 8px; color: var(--primary); flex-shrink: 0; opacity: .5;
 }
-.tree-node-v:hover .tree-dot {
-    background: var(--accent); color: var(--dark); transform: scale(1.1);
-    box-shadow: 0 0 0 4px var(--bg-alt), 0 0 14px rgba(240,181,40,.2);
-}
-.tree-card {
-    margin-top: 8px; background: var(--bg); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 20px 18px; text-align: center;
-    width: 100%; box-shadow: var(--shadow-sm);
-    transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
-}
-.tree-node-v:hover .tree-card {
-    border-color: var(--primary); box-shadow: var(--shadow-md); transform: translateY(-3px);
-}
-.tree-card-icon { font-size: 1.4rem; margin-bottom: 6px; }
-.tree-card h3 { font-size: .95rem; font-weight: 600; margin-bottom: 6px; color: var(--text); }
-.tree-card p { font-size: .82rem; color: var(--text-light); line-height: 1.6; }
 
-@media (max-width: 768px) {
-    .tree { align-items: stretch; padding-left: 20px; position: relative; }
-    .tree::before {
-        content: ''; position: absolute; left: 40px; top: 0; bottom: 0;
-        width: 2px; background: linear-gradient(to bottom, var(--primary), var(--accent));
-    }
-    .tree-tier, .tier-root { flex-direction: column; gap: 16px; max-width: 100%; width: 100%; }
-    .tree-connector-down { display: none; }
-    .tier-branch { padding: 0; }
-    .tier-branch::before, .tier-branch::after,
-    .tier-branch .tree-node-v::before,
-    .tier-branch .tree-node-v::after { display: none; }
-    .tree-node-v { flex-direction: row; gap: 12px; align-items: flex-start; }
-    .tree-card { margin-top: 0; text-align: left; }
-    .tree-dot { flex-shrink: 0; width: 40px; height: 40px; font-size: .75rem; }
+/* Delivery & Service Workflow */
+.delivery-workflow {
+    margin-top: 56px; padding: 40px 32px; border-radius: var(--radius-lg);
+    background: var(--bg); border: 1px solid var(--border); box-shadow: var(--shadow-sm);
+}
+.workflow-heading {
+    text-align: center; font-size: 1.25rem; font-weight: 700; color: var(--text);
+    margin-bottom: 32px;
+}
+.workflow-pipeline {
+    display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
+    gap: 10px 0;
+}
+.wf-step {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 16px; border-radius: var(--radius); background: var(--bg-alt);
+    border: 1.5px solid var(--border); white-space: nowrap;
+    will-change: transform;
+    backface-visibility: hidden;
+    transition: transform .4s cubic-bezier(.22,1,.36,1),
+                background .3s ease, border-color .3s ease,
+                box-shadow .35s ease, color .25s ease;
+}
+.wf-step:hover {
+    border-color: var(--primary); box-shadow: var(--shadow-sm); transform: translateY(-2px);
+}
+.wf-step.wf-active {
+    border-color: var(--primary); background: #fff;
+    box-shadow: 0 10px 28px rgba(26,20,100,.15), 0 2px 6px rgba(0,0,0,.06);
+    transform: translateY(-8px); z-index: 2;
+}
+.wf-step.wf-active .wf-label { font-weight: 700; color: var(--primary); }
+.wf-num {
+    width: 26px; height: 26px; border-radius: 50%; background: var(--primary); color: #fff;
+    font-size: .7rem; font-weight: 700; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+.wf-label { font-size: .82rem; font-weight: 500; color: var(--text); }
+.wf-connector {
+    width: 24px; height: 2px; background: var(--primary); flex-shrink: 0; opacity: .35;
+}
+
+@media (max-width: 900px) {
+    .service-phases { flex-direction: column; align-items: center; gap: 16px; }
+    .service-phase { max-width: 100%; }
+    .phase-arrow { transform: rotate(90deg); padding: 4px 0; }
+    .workflow-pipeline { flex-direction: column; align-items: stretch; gap: 0; }
+    .wf-step { white-space: normal; }
+    .wf-connector { width: 2px; height: 16px; margin: 0 auto; }
 }
 
 /* Org Structure */
