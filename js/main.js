@@ -46,22 +46,29 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         var lastSentHeight = 0;
-        var heightRafId = 0;
         function sendHeight() {
-            if (heightRafId) return;
-            heightRafId = requestAnimationFrame(function () {
-                heightRafId = 0;
-                var h = document.documentElement.scrollHeight;
-                if (h !== lastSentHeight) {
-                    lastSentHeight = h;
-                    window.parent.postMessage({ type: 'iframe-height', height: h }, '*');
-                }
-            });
+            var h = document.documentElement.scrollHeight;
+            if (h !== lastSentHeight) {
+                lastSentHeight = h;
+                window.parent.postMessage({ type: 'iframe-height', height: h }, '*');
+            }
         }
         sendHeight();
-        setTimeout(sendHeight, 200);
+        setTimeout(sendHeight, 100);
+        setTimeout(sendHeight, 400);
         setTimeout(sendHeight, 1000);
+        setTimeout(sendHeight, 2500);
+        setTimeout(sendHeight, 5000);
         new ResizeObserver(sendHeight).observe(document.body);
+        new MutationObserver(function () { setTimeout(sendHeight, 50); })
+            .observe(document.body, { childList: true, subtree: true, attributes: true });
+        window.addEventListener('load', function () {
+            sendHeight();
+            setTimeout(sendHeight, 300);
+        });
+        document.querySelectorAll('img').forEach(function (img) {
+            if (!img.complete) img.addEventListener('load', sendHeight);
+        });
 
         return;
     }
@@ -225,11 +232,8 @@ document.addEventListener('DOMContentLoaded', function () {
             var newH = e.data.height + 'px';
             Object.keys(frames).forEach(function (k) {
                 try {
-                    if (frames[k].contentWindow === src) {
-                        var isVisible = frames[k].classList.contains('visible');
-                        if (isVisible && frames[k].style.height !== newH) {
-                            frames[k].style.height = newH;
-                        }
+                    if (frames[k].contentWindow === src && frames[k].style.height !== newH) {
+                        frames[k].style.height = newH;
                     }
                 } catch (ex) {}
             });
