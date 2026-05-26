@@ -151,12 +151,28 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var frames = {};
     var loadedFrames = {};
+    var heightReady = {};
     var frameContainer = document.createElement('div');
     frameContainer.id = 'frame-container';
     if (footer) {
         footer.parentNode.insertBefore(frameContainer, footer);
     } else {
         pageContent.after(frameContainer);
+    }
+
+    function revealFrame(page) {
+        var f = frames[page];
+        if (!f || f.classList.contains('visible')) return;
+        if (!loadedFrames[page] || !heightReady[page]) return;
+        if (currentPage !== page) return;
+        Object.keys(frames).forEach(function (k) {
+            if (k !== page) frames[k].className = 'page-frame';
+        });
+        f.className = 'page-frame visible';
+        frameContainer.classList.add('active');
+        pageContent.style.display = 'none';
+        if (footer) footer.style.cssText = 'display:none !important';
+        window.scrollTo(0, 0);
     }
 
     function getOrCreateFrame(page) {
@@ -173,13 +189,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     f.contentWindow.postMessage({ type: 'lang-change', lang: I18N.lang() }, '*');
                 }
             } catch (e) {}
-            if (currentPage === page && !f.classList.contains('visible')) {
-                f.className = 'page-frame visible';
-                frameContainer.classList.add('active');
-                pageContent.style.display = 'none';
-                if (footer) footer.style.cssText = 'display:none !important';
-                window.scrollTo(0, 0);
-            }
+            revealFrame(page);
         };
 
         frames[page] = f;
@@ -197,19 +207,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function showSubPage(page) {
-        Object.keys(frames).forEach(function (k) { frames[k].className = 'page-frame'; });
         var f = getOrCreateFrame(page);
         currentPage = page;
         updateNavActive(page);
         if (typeof window._globePause === 'function') window._globePause();
-
-        if (loadedFrames[page]) {
-            f.className = 'page-frame visible';
-            frameContainer.classList.add('active');
-            pageContent.style.display = 'none';
-            if (footer) footer.style.cssText = 'display:none !important';
-            window.scrollTo(0, 0);
-        }
+        revealFrame(page);
     }
 
     function updateNavActive(page) {
@@ -232,8 +234,14 @@ document.addEventListener('DOMContentLoaded', function () {
             var newH = e.data.height + 'px';
             Object.keys(frames).forEach(function (k) {
                 try {
-                    if (frames[k].contentWindow === src && frames[k].style.height !== newH) {
-                        frames[k].style.height = newH;
+                    if (frames[k].contentWindow === src) {
+                        if (frames[k].style.height !== newH) {
+                            frames[k].style.height = newH;
+                        }
+                        if (!heightReady[k] && e.data.height > 0) {
+                            heightReady[k] = true;
+                            revealFrame(k);
+                        }
                     }
                 } catch (ex) {}
             });
@@ -344,7 +352,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     /* Preload all sub-page iframes in background so switching is instant */
     setTimeout(function () {
-        ['about.html', 'blog.html', 'services.html'].forEach(function (p) {
+        ['about.html', 'blog.html'].forEach(function (p) {
             getOrCreateFrame(p);
         });
     }, 500);
