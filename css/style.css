@@ -730,6 +730,9 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     background: linear-gradient(135deg, #f0eeeb, #ddd8d0);
     display: flex; align-items: center; justify-content: center; font-size: 4rem;
 }
+.org-team { margin-top: 16px; }
+.org-team dt { font-weight: 600; color: var(--dark); margin-top: 14px; font-size: .95rem; }
+.org-team dd { margin: 4px 0 0 0; font-size: .9rem; color: var(--text-light); line-height: 1.6; }
 .about-banner-img {
     border-radius: var(--radius-lg); overflow: hidden; max-height: 360px;
 }
